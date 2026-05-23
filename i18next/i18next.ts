@@ -53,6 +53,36 @@ export const resolveDeviceLanguage = (): string => {
   return supportedLanguages.includes(defaultLanguages) ? defaultLanguages : fallbackLng;
 };
 
+export const updateToDeviceLanguage = (): boolean => {
+  try {
+    Storage.removeItemSync(STORAGE_KEY);
+    i18next.changeLanguage(resolveDeviceLanguage());
+    return true;
+  } catch (error) {
+    console.error('Error resetting to device language:', error);
+    return false;
+  }
+};
+
+export const updateUserLanguage = (lng: string): boolean => {
+  try {
+    if (!supportedLanguages.includes(lng)) {
+      console.warn(`Attempted to change to unsupported language: ${lng}`);
+      return false;
+    }
+    if (!getLocales().some((locale) => locale.languageCode === lng)) {
+      console.warn(`Attempted to change to language not available on device: ${lng}`);
+      return false;
+    }
+    Storage.setItemSync(STORAGE_KEY, JSON.stringify({ language: lng }));
+    i18next.changeLanguage(lng);
+    return true;
+  } catch (error) {
+    console.error('Error updating user language:', error);
+    return false;
+  }
+};
+
 i18next.use(initReactI18next).init({
   resources,
   fallbackLng,

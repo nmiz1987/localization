@@ -1,9 +1,8 @@
 import * as Expo from 'expo';
-import Storage from 'expo-sqlite/kv-store';
 import { useTranslation } from 'react-i18next';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import appConfig from '../../appConfig';
-import i18next, { isRTL, LANGUAGE_LABELS, resolveDeviceLanguage } from '../../i18next/i18next';
+import i18next, { isRTL, LANGUAGE_LABELS, updateToDeviceLanguage, updateUserLanguage } from '../../i18next/i18next';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -19,14 +18,13 @@ export default function HomeScreen() {
 
   const setLanguage = async (code: string | null) => {
     try {
+      let success = false;
       if (code === null) {
-        Storage.removeItemSync(STORAGE_KEY);
-        i18next.changeLanguage(resolveDeviceLanguage());
+        success = updateToDeviceLanguage();
       } else {
-        Storage.setItemSync(STORAGE_KEY, JSON.stringify({ language: code }));
-        i18next.changeLanguage(code);
+        success = updateUserLanguage(code);
       }
-      reloadApp();
+      success && reloadApp();
     } catch (error) {
       console.error('Error setting language:', error);
     }

@@ -6,7 +6,6 @@ import i18next, { isRTL, LANGUAGE_LABELS, updateToDeviceLanguage, updateUserLang
 
 export default function HomeScreen() {
   const { t } = useTranslation();
-  const { STORAGE_KEY } = appConfig.i18n;
 
   const reloadApp = async () => {
     if (__DEV__) {
